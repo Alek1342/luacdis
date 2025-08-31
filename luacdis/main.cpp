@@ -305,12 +305,8 @@ int main(int argc, char* argv[]) {
                         writestr("null");
                     } else {
                         writestr("\"");
-                        readbytesluastring(luacpos, inttmp2 - 1);
+                        readbytesluastring(luacpos, inttmp2);
                         writestr("\"");
-                        uchartmp = readbyte(luacpos);
-                        if (uchartmp != 0) {
-                            writehexbyteadditional(uchartmp);
-                        }
                     }
                     break;
                 }
@@ -412,12 +408,8 @@ int main(int argc, char* argv[]) {
                     sizetmp = 8 + 4 * (size_t)inttmp;
                     makeroom(sizetmp);
                     writestr("\"");
-                    readbytesluastring(luacpos, inttmp - 1);
+                    readbytesluastring(luacpos, inttmp);
                     writestr("\"");
-                    uchartmp = readbyte(luacpos);
-                    if (uchartmp != 0) {
-                        writehexbyteadditional(uchartmp);
-                    }
                 }
             } else {
                 writeindent(indentpart, indentpsize, i1cn);
@@ -437,12 +429,8 @@ int main(int argc, char* argv[]) {
                     writestr("null");
                 } else {
                     writestr("\"");
-                    readbytesluastring(luacpos, inttmp - 1);
+                    readbytesluastring(luacpos, inttmp);
                     writestr("\"");
-                    uchartmp = readbyte(luacpos);
-                    if (uchartmp != 0) {
-                        writehexbyteadditional(uchartmp);
-                    }
                 }
             }
             
@@ -503,12 +491,8 @@ int main(int argc, char* argv[]) {
                     writestr("null");
                 } else {
                     writestr("\"");
-                    readbytesluastring(luacpos, inttmp2 - 1);
+                    readbytesluastring(luacpos, inttmp2);
                     writestr("\"");
-                    uchartmp = readbyte(luacpos);
-                    if (uchartmp != 0) {
-                        writehexbyteadditional(uchartmp);
-                    }
                 }
                 writestr(" ");
                 writeint(readint(luacpos));
@@ -552,12 +536,8 @@ int main(int argc, char* argv[]) {
                     writestr("null");
                 } else {
                     writestr("\"");
-                    readbytesluastring(luacpos, inttmp2 - 1);
+                    readbytesluastring(luacpos, inttmp2);
                     writestr("\"");
-                    uchartmp = readbyte(luacpos);
-                    if (uchartmp != 0) {
-                        writehexbyteadditional(uchartmp);
-                    }
                 }
             }
             makeroom(i2sz + 4);
