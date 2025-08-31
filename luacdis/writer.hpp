@@ -79,14 +79,14 @@ inline void writehexintadditional(int n) {
 	pos[0] = '(';
 	pos[1] = '0';
 	pos[2] = 'x';
-	pos[3] = hex[(n >> 4) & 0xf];
-	pos[4] = hex[n & 0xf];
-	pos[5] = hex[(n >> 12) & 0xf];
-	pos[6] = hex[(n >> 8) & 0xf];
-	pos[7] = hex[(n >> 20) & 0xf];
-	pos[8] = hex[(n >> 16) & 0xf];
-	pos[9] = hex[(n >> 28) & 0xf];
-	pos[10] = hex[(n >> 24) & 0xf];
+	pos[3] = hex[(n >> 28) & 0xf];
+	pos[4] = hex[(n >> 24) & 0xf];
+	pos[5] = hex[(n >> 20) & 0xf];
+	pos[6] = hex[(n >> 16) & 0xf];
+	pos[7] = hex[(n >> 12) & 0xf];
+	pos[8] = hex[(n >> 8) & 0xf];
+	pos[9] = hex[(n >> 4) & 0xf];
+	pos[10] = hex[n & 0xf];
 	pos[11] = ')';
 	pos += 12;
 
@@ -97,14 +97,46 @@ inline void writehexdword(T num) {
 	char hex[] = "0123456789ABCDEF";
 	pos[0] = '0';
 	pos[1] = 'x';
-	pos[2] = hex[(num >> 4) & 0xf];
-	pos[3] = hex[num & 0xf];
-	pos[4] = hex[(num >> 12) & 0xf];
-	pos[5] = hex[(num >> 8) & 0xf];
-	pos[6] = hex[(num >> 20) & 0xf];
-	pos[7] = hex[(num >> 16) & 0xf];
-	pos[8] = hex[(num >> 28) & 0xf];
-	pos[9] = hex[(num >> 24) & 0xf];
+	pos[2] = hex[(num >> 28) & 0xf];
+	pos[3] = hex[(num >> 24) & 0xf];
+	pos[4] = hex[(num >> 20) & 0xf];
+	pos[5] = hex[(num >> 16) & 0xf];
+	pos[6] = hex[(num >> 12) & 0xf];
+	pos[7] = hex[(num >> 8) & 0xf];
+	pos[8] = hex[(num >> 4) & 0xf];
+	pos[9] = hex[num & 0xf];
+	pos += 10;
+}
+
+
+
+inline void writeunused9(int num) {
+	char hex[] = "0123456789ABCDEF";
+	pos[0] = ' ';
+	pos[1] = '(';
+	pos[2] = '0';
+	pos[3] = 'x';
+	pos[4] = hex[(num >> 8) & 0xf];
+	pos[5] = hex[(num >> 4) & 0xf];
+	pos[6] = hex[num & 0xf];
+	pos[7] = ')';
+	pos += 8;
+}
+
+
+
+inline void writeunused18(int num) {
+	char hex[] = "0123456789ABCDEF";
+	pos[0] = ' ';
+	pos[1] = '(';
+	pos[2] = '0';
+	pos[3] = 'x';
+	pos[4] = hex[(num >> 16) & 0xf];
+	pos[5] = hex[(num >> 12) & 0xf];
+	pos[6] = hex[(num >> 8) & 0xf];
+	pos[7] = hex[(num >> 4) & 0xf];
+	pos[8] = hex[num & 0xf];
+	pos[9] = ')';
 	pos += 10;
 }
 

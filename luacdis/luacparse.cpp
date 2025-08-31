@@ -156,8 +156,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" v");
         writeint(b);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -179,8 +178,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         int unused = inst >> 14;
         writeint(a);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused18(unused);
         }
         break;
     }
@@ -210,8 +208,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
             writeint(a+b);
         }
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -225,8 +222,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" u");
         writeint(b);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -297,8 +293,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" v");
         writeint(a);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -494,8 +489,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" v");
         writeint(b);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -508,8 +502,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" v");
         writeint(b);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -522,8 +515,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" v");
         writeint(b);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -637,8 +629,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" ");
         writeint(b);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -714,8 +705,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
             writestr(" GET_TOP");
         }
         if (unused) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -744,8 +734,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
             break;
         }
         if (unused) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
@@ -787,8 +776,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writeint(a);
         writestr(" ");
         writeint(c);
-        writestr(" ");
-        writeint(unused);
+        writeunused9(unused);
         break;
     }
     case 35: {
@@ -905,8 +893,7 @@ void disasm(unsigned int inst, int instcnt, int pc) {
         writestr(" v");
         writeint(b);
         if (unused != 0) {
-            writestr(" ");
-            writeint(unused);
+            writeunused9(unused);
         }
         break;
     }
