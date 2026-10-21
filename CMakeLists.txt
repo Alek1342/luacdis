@@ -1,7 +1,6 @@
-cmake_minimum_required (VERSION "3.10")
+cmake_minimum_required(VERSION "3.10")
 
-project ("luacdis")
-
+project("luacdis")
 
 include("CheckCSourceCompiles")
 
@@ -66,18 +65,13 @@ target_include_directories("luacdis"
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
-include("FetchContent")
-FetchContent_Declare(
-        "dragonbox"
-        GIT_REPOSITORY "https://github.com/jk-jeon/dragonbox"
-)
-FetchContent_MakeAvailable("dragonbox")
+add_subdirectory("third-party/dragonbox")
+
 target_link_libraries("luacdis" PRIVATE "dragonbox::dragonbox_to_chars")
 
-
- if(HAS_ASAN)
-        target_link_libraries("luacdis" PRIVATE "asan_options")
-    endif()
+if(HAS_ASAN)
+    target_link_libraries("luacdis" PRIVATE "asan_options")
+endif()
 
 target_compile_features("luacdis" PRIVATE "c_std_11" "cxx_std_17")
 target_compile_definitions("luacdis" PRIVATE "_CRT_SECURE_NO_WARNINGS")
