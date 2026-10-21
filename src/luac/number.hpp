@@ -6,20 +6,18 @@
 namespace Luac {
     class Number {
     private:
-        // INT_MIN is not integral cus ripped off code is buggy
-        static constexpr i32 FLOAT_INTEGER_SENTINEL = INT32_MIN;
-        static constexpr f64 INTEGER_TYPE_SENTINEL = 0.5;
-        static constexpr i32 DEFAULT_INT = 0;
-        static constexpr f64 DEFAULT_FLOAT = 0;
+        static constexpr u64 DOUBLE_MANTISSA_MASK = (1ULL << 52) - 1;
 
     public:
-        i32 m_inum = DEFAULT_INT;
-        f64 m_fnum = DEFAULT_FLOAT;
+        f64 m_fnum = 0;
+        i32 m_inum = 0;
+        bool m_isInt = false;
+        bool m_isWhole = false;
         void load(Luac::InputStream* stream);
         bool isInt();
-        bool isFloatIntegral();
         bool isFloat();
-        bool isTreatedAsInt();
+        bool isWholeFloat();
+        bool isWhole();
         void print(Lasm::OutputStream* stream);
     };
 
