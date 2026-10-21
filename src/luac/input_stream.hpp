@@ -5,9 +5,6 @@ namespace Luac {
     class Header;
     class InputStream {
     public:
-        // bool m_isLittleEndian = true;
-        // bool m_isStringSize64 = false;
-        // bool m_isNumberSize64 = true;
         Header* m_luacHeader = nullptr;
         u8* m_start = nullptr;
         u8* m_cursor = nullptr;

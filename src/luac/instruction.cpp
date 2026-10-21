@@ -31,8 +31,14 @@ void Luac::Instruction::loadArray(Luac::InputStream* stream, Instruction* instru
 }
 
 void Luac::Instruction::printArray(Lasm::OutputStream* stream, Array<Instruction>* parr) {
-    if (parr->length() > 0) {
-        printArray(stream, parr->items(), parr->length());
+    i32 len = parr->length();
+    if (len > 0) {
+        printArray(stream, parr->items(), len);
+    } else if (len < 0) {
+        stream->reserve(20);
+        stream->write(".instcnt ");
+        stream->write(len);
+        stream->write("\n");
     }
 }
 

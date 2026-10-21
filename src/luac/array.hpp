@@ -9,8 +9,8 @@ namespace Luac {
     template <typename T>
     class Array {
     private:
-        i32 m_length = 0;
         T* m_items = nullptr;
+        i32 m_length = 0;
 
     public:
         void init(i32 length) {

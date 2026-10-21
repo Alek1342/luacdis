@@ -8,8 +8,8 @@ namespace Luac {
     public:
         enum Type : u8 { NIL = 0, BOOLEAN = 1, NUMBER = 3, STRING = 4, INT = 254 };
 
-        u8 m_type = 0;
         void* m_value = nullptr;
+        u8 m_type = 0;
 
         static void loadArray(Luac::InputStream* stream, Array<Constant>* parr);
         static void loadArray(Luac::InputStream* stream, Constant* constants, size_t count);

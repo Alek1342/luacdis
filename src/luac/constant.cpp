@@ -90,7 +90,7 @@ void Luac::Constant::printArray(Lasm::OutputStream* stream, Array<Constant>* par
         }
     } else if (len < 0) {
         stream->reserve(20);
-        stream->write(".upvaluecnt ");
+        stream->write(".constcnt ");
         stream->write(len);
         stream->write("\n");
     }
