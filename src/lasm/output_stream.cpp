@@ -164,6 +164,13 @@ void Lasm::OutputStream::writeHex(u32 x) {
     write(hex2(x & 0xFF), 2);
 }
 
+void Lasm::OutputStream::writeHex9(u32 x) {
+    write("0x");
+    memset(m_cursor, '0' + ((x >> 8) & 1), 1);
+    m_cursor += 1;
+    write(hex2(x & 0xFF), 2);
+}
+
 void Lasm::OutputStream::writeEscape(const void* src, size_t size) {
     const u8* p = static_cast<const u8*>(src);
     u8* out = m_cursor;
@@ -235,4 +242,19 @@ void Lasm::OutputStream::writeHex(u64 x) {
     write(hex2((x >> 16) & 0xFF), 2);
     write(hex2((x >> 8) & 0xFF), 2);
     write(hex2(x & 0xFF), 2);
+}
+
+void Lasm::OutputStream::writeFast(int value) {
+    size_t sz = 0;
+    if (value > 9) {
+        if (value > 99) {
+            sz = 3;
+        } else {
+            sz = 2;
+        }
+    } else {
+        sz = 1;
+    }
+    memcpy(m_cursor, (void*)(int2strt + (value) * 3), sz);
+    m_cursor += sz;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "int2strt.hpp"
 #include "lasm/print_state.hpp"
 #include "types.hpp"
 #include <cstring>
@@ -27,9 +28,11 @@ namespace Lasm {
 
         void write(i32 x);
         void write(u32 x);
+        void writeFast(int value);
         void write(f64 x);
 
         void writeHex(u8 x);
+        void writeHex9(u32 x);
         void writeHex(u32 x);
         void writeHex(u64 x);
         void writeHex56(u64 x);
