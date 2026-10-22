@@ -14,7 +14,7 @@ void Luac::LocalVariable::loadArray(Luac::InputStream* stream, Array<LocalVariab
     Array<LocalVariable>& locvars = *parr;
     locvars.init(len);
     if (len > 0) {
-        for (size_t i = 0; i < len; i++) {
+        for (size_t i = 0; i < (size_t)len; i++) {
             locvars[i].m_varname->load(stream);
             if (!stream->request(8)) {
                 LOGF("EOF at locvar pc");
@@ -29,7 +29,7 @@ void Luac::LocalVariable::printArray(Lasm::OutputStream* stream, Array<LocalVari
     i32 len = parr->length();
     LocalVariable* items = parr->items();
     if (len > 0) {
-        for (size_t i = 0; i < len; i++) {
+        for (size_t i = 0; i < (size_t)len; i++) {
             items[i].print(stream);
         }
     } else if (len < 0) {

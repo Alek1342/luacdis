@@ -33,6 +33,11 @@ target_include_directories("luacdis"
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
 )
 
+target_compile_options(luacdis PRIVATE
+    -Wall
+    -Wextra
+    -Werror
+)
 
 if(ENABLE_ASAN)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

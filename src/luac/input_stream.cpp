@@ -17,12 +17,8 @@ void Luac::InputStream::loadFromFile(char* path) {
         LOGF("seek fail");
     }
 
-    i64 size = _ftelli64(file);
+    size_t size = _ftelli64(file);
 
-    if (size < 0) {
-        fclose(file);
-        LOGF("Bruh i doubt that i can malloc THIS much bytes memory exactly %lli bytes", size);
-    }
     if (size == 0) {
         fclose(file);
         LOGF("Empty file");

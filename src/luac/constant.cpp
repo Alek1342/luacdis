@@ -85,7 +85,7 @@ void Luac::Constant::printArray(Lasm::OutputStream* stream, Array<Constant>* par
     i32 len = parr->length();
     Constant* items = parr->items();
     if (len > 0) {
-        for (size_t i = 0; i < len; i++) {
+        for (size_t i = 0; i < (size_t)len; i++) {
             items[i].print(stream, i);
         }
     } else if (len < 0) {

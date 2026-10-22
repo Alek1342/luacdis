@@ -23,6 +23,7 @@ namespace Luac {
         static LUACDIS_INLINE void printGoto(Lasm::OutputStream* stream, size_t instCount, size_t pc, int arg);
 
     public:
+        u32 m_value;
         enum OP {
             MOVE,
             LOADK,
@@ -72,26 +73,26 @@ namespace Luac {
             SHL,
             SHR
         };
-        u32 m_value;
-        [[nodiscard]] constexpr int GET_OPCODE() const noexcept {
+
+        constexpr int GET_OPCODE() const noexcept {
             return static_cast<int>(m_value & UINT32_C(0x3F));
         }
-        [[nodiscard]] constexpr int GETARG_A() const noexcept {
+        constexpr int GETARG_A() const noexcept {
             return static_cast<int>((m_value >> 6) & UINT32_C(0xFF));
         }
-        [[nodiscard]] constexpr int GETARG_B() const noexcept {
+        constexpr int GETARG_B() const noexcept {
             return static_cast<int>(m_value >> 23);
         }
-        [[nodiscard]] constexpr int GETARG_C() const noexcept {
+        constexpr int GETARG_C() const noexcept {
             return static_cast<int>((m_value >> 14) & UINT32_C(0x1FF));
         }
-        [[nodiscard]] constexpr int GETARG_BX() const noexcept {
+        constexpr int GETARG_BX() const noexcept {
             return static_cast<int>(m_value >> 14);
         }
-        [[nodiscard]] constexpr int GETARG_SBX() const noexcept {
+        constexpr int GETARG_SBX() const noexcept {
             return static_cast<int>((m_value >> 14) - UINT32_C(0x1ffff));
         }
-        [[nodiscard]] constexpr int GETARG_AX() const noexcept {
+        constexpr int GETARG_AX() const noexcept {
             return static_cast<int>(m_value >> 6);
         }
         void print(Lasm::OutputStream* stream, size_t instCount = 0, size_t pc = 0);

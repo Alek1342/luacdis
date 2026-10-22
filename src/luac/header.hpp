@@ -4,7 +4,7 @@
 
 namespace Luac {
     class InputStream;
-    struct Header {
+    class Header {
     public:
         static constexpr u8 expectedSignature[4] = {0x1B, 'L', 'u', 'a'};
         static constexpr u8 expectedTail[6] = {0x19, 0x93, 0x0D, 0x0A, 0x1A, 0x0A};

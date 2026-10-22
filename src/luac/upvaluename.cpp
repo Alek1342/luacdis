@@ -8,7 +8,7 @@ void Luac::Upvaluename::loadArray(Luac::InputStream* stream, Array<Upvaluename>*
     Array<Upvaluename>& upvalnames = *parr;
     upvalnames.init(len);
     if (len > 0) {
-        for (size_t i = 0; i < len; i++) {
+        for (size_t i = 0; i < (size_t)len; i++) {
             upvalnames[i].load(stream);
         }
     }
@@ -18,7 +18,7 @@ void Luac::Upvaluename::printArray(Lasm::OutputStream* stream, Array<Upvaluename
     i32 len = parr->length();
     Upvaluename* items = parr->items();
     if (len > 0) {
-        for (size_t i = 0; i < len; i++) {
+        for (size_t i = 0; i < (size_t)len; i++) {
             items[i].print(stream);
         }
     } else if (len < 0) {

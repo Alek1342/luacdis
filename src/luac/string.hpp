@@ -15,6 +15,6 @@ namespace Luac {
         void init(u8* bytes, size_t size, u32 unused = 0);
         void load(Luac::InputStream* stream);
         virtual void print(Lasm::OutputStream* stream);
-        ~String();
+        virtual ~String();
     };
 } // namespace Luac

@@ -17,7 +17,7 @@ void Luac::Lineinfo::loadArray(Luac::InputStream* stream, Array<Lineinfo>* parr)
         u32* values = reinterpret_cast<u32*>(parr->items());
         stream->getBuffer(blen, values);
         if (stream->m_luacHeader != nullptr && !stream->m_luacHeader->m_isLittleEndian) {
-            for (size_t i = 0; i < len; i++) {
+            for (size_t i = 0; i < (size_t)len; i++) {
                 values[i] = BSWAP32(values[i]);
             }
         }
@@ -28,7 +28,7 @@ void Luac::Lineinfo::printArray(Lasm::OutputStream* stream, Array<Lineinfo>* par
     i32 len = parr->length();
     Lineinfo* items = parr->items();
     if (len > 0) {
-        for (size_t i = 0; i < len; i++) {
+        for (size_t i = 0; i < (size_t)len; i++) {
             items[i].print(stream);
         }
     } else if (len < 0) {

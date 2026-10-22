@@ -1,7 +1,6 @@
 #include "luac/instruction.hpp"
 #include "bswap.hpp"
 #include "lasm/output_stream.hpp"
-#include "log.hpp"
 #include "luac/header.hpp"
 #include <algorithm>
 #include <cstdlib>
@@ -59,7 +58,7 @@ void Luac::Instruction::printArray(Lasm::OutputStream* stream, Instruction* inst
             case FORPREP:
             case TFORLOOP:
                 lb = i + inst.GETARG_SBX() + 1;
-                if (lb >= count || lb < 0) {
+                if (lb < 0 || (size_t)lb >= count) {
                     break;
                 }
                 labels.push_back(lb);
@@ -161,7 +160,7 @@ void Luac::Instruction::printGoto(Lasm::OutputStream* stream, size_t instCount, 
     stream->write(" ");
     if (instCount > 0) {
         int gotopos = pc + arg + 1;
-        if (gotopos >= instCount || gotopos < 0) {
+        if (gotopos < 0 || (size_t)gotopos >= instCount) {
             stream->write(arg);
         } else {
             stream->write(":goto_");
