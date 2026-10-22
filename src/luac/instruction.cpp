@@ -1,7 +1,11 @@
 #include "luac/instruction.hpp"
 #include "bswap.hpp"
 #include "lasm/output_stream.hpp"
+#include "log.hpp"
 #include "luac/header.hpp"
+#include <algorithm>
+#include <cstdlib>
+#include <vector>
 
 void Luac::Instruction::loadArray(Luac::InputStream* stream, Array<Instruction>* parr) {
     if (!stream->request(4)) {
@@ -44,10 +48,48 @@ void Luac::Instruction::printArray(Lasm::OutputStream* stream, Array<Instruction
 }
 
 void Luac::Instruction::printArray(Lasm::OutputStream* stream, Instruction* instructions, size_t count) {
+    std::vector<size_t> labels;
+    int lb = 0;
     for (size_t i = 0; i < count; ++i) {
+        // JMP FORLOOP FORPREP TFORLOOP
+        Instruction inst = instructions[i];
+        switch (inst.GET_OPCODE()) {
+            case JMP:
+            case FORLOOP:
+            case FORPREP:
+            case TFORLOOP:
+                lb = i + inst.GETARG_SBX() + 1;
+                if (lb >= count || lb < 0) {
+                    break;
+                }
+                labels.push_back(lb);
+                break;
+            default:
+                break;
+        }
+    }
+    std::sort(labels.begin(), labels.end());
+    labels.erase(std::unique(labels.begin(), labels.end()), labels.end());
+    size_t labels_len = labels.size();
+    size_t label_i = 1;
+    size_t label = 0;
+    if (labels_len > 0) {
+        label = labels[0];
+    }
+    for (size_t i = 0; i < count; ++i) {
+        if (labels_len && i == label) {
+            stream->reserve(30 + stream->m_indent);
+            stream->write('\t', stream->m_indent);
+            stream->write(":goto_");
+            stream->write((u32)label);
+            stream->write("\n");
+            if (label_i < labels_len) {
+                label = labels.at(label_i++);
+            }
+        }
         stream->reserve(50 + stream->m_indent);
         stream->write('\t', stream->m_indent);
-        instructions[i].print(stream);
+        instructions[i].print(stream, count, i);
         stream->write("\n");
     }
 }
