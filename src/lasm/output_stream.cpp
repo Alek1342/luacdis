@@ -1,6 +1,7 @@
 #include "lasm/output_stream.hpp"
 #include "clz.hpp"
 #include "dragonbox/dragonbox_to_chars.h"
+#include "int2strt.hpp"
 #include "log.hpp"
 #include <cstdio>
 #include <cstdlib>
