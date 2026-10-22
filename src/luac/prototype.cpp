@@ -182,7 +182,7 @@ void Luac::Prototype::printPHeader(Lasm::OutputStream* stream, size_t fnum) {
     stream->write("\n");
 
     stream->write('\t', stream->m_indent);
-    stream->write(".numprams ");
+    stream->write(".numparams ");
     stream->write(m_numparams);
     stream->write("\n");
 
