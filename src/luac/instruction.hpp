@@ -8,8 +8,19 @@
 namespace Luac {
     class Instruction {
     private:
-        static LUACDIS_INLINE void printVKVK(Lasm::OutputStream* stream, int a, int b, int c);
-        static LUACDIS_INLINE void printGoto(Lasm::OutputStream* stream, size_t instCount, size_t pc, int a, int sbx);
+        static LUACDIS_INLINE void printVKIVKI(Lasm::OutputStream* stream, int arg1, int arg2);
+        static LUACDIS_INLINE void printVITVI(Lasm::OutputStream* stream, int arg1, int arg2);
+        static LUACDIS_INLINE void printVKI(Lasm::OutputStream* stream, int arg);
+        static LUACDIS_INLINE void printVI(Lasm::OutputStream* stream, int arg);
+        static LUACDIS_INLINE void printVIVI(Lasm::OutputStream* stream, int arg1, int arg2);
+        static LUACDIS_INLINE void printVIVKIVKI(Lasm::OutputStream* stream, int arg1, int arg2, int arg3);
+        static LUACDIS_INLINE void printTVI(Lasm::OutputStream* stream, int arg);
+        static LUACDIS_INLINE void printI(Lasm::OutputStream* stream, int arg);
+        static LUACDIS_INLINE void printUI(Lasm::OutputStream* stream, int arg);
+        static LUACDIS_INLINE void printKIF(Lasm::OutputStream* stream, int arg);
+        static LUACDIS_INLINE void printKI(Lasm::OutputStream* stream, int arg);
+
+        static LUACDIS_INLINE void printGoto(Lasm::OutputStream* stream, size_t instCount, size_t pc, int arg);
 
     public:
         enum OP {

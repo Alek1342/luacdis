@@ -11,5 +11,7 @@ typedef std::int16_t i16;
 typedef std::int32_t i32;
 typedef std::int64_t i64;
 
+typedef unsigned int uint;
+
 typedef float f32;
 typedef double f64;

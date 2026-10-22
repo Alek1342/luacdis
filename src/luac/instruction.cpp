@@ -52,82 +52,114 @@ void Luac::Instruction::printArray(Lasm::OutputStream* stream, Instruction* inst
     }
 }
 
-void Luac::Instruction::printVKVK(Lasm::OutputStream* stream, int a, int b, int c) {
-    stream->writeFast(a);
-    if (b & 256) {
-        b = b & 255;
-        stream->write(" k");
-    } else {
-        stream->write(" v");
-    }
-    stream->writeFast(b);
-    if (c & 256) {
-        c = c & 255;
-        stream->write(" k");
-    } else {
-        stream->write(" v");
-    }
-    stream->writeFast(c);
+void Luac::Instruction::printVKIVKI(Lasm::OutputStream* stream, int arg1, int arg2) {
+    printVKI(stream, arg1);
+    printVKI(stream, arg2);
 }
 
-void Luac::Instruction::printGoto(Lasm::OutputStream* stream, size_t instCount, size_t pc, int a, int sbx) {
-    stream->writeFast(a);
+void Luac::Instruction::printVITVI(Lasm::OutputStream* stream, int arg1, int arg2) {
+    stream->write(" v");
+    stream->writeFast(arg1);
+    stream->write("..v");
+    stream->writeFast(arg2);
+}
+
+void Luac::Instruction::printVKI(Lasm::OutputStream* stream, int arg) {
+    if (arg & 256) {
+        arg = arg & 255;
+        stream->write(" k");
+    } else {
+        stream->write(" v");
+    }
+    stream->writeFast(arg);
+}
+
+void Luac::Instruction::printVI(Lasm::OutputStream* stream, int arg) {
+    stream->write(" v");
+    stream->writeFast(arg);
+}
+
+void Luac::Instruction::printTVI(Lasm::OutputStream* stream, int arg) {
+    stream->write("..v");
+    stream->writeFast(arg);
+}
+
+void Luac::Instruction::printI(Lasm::OutputStream* stream, int arg) {
+    stream->write(" ");
+    stream->writeFast(arg);
+}
+
+void Luac::Instruction::printUI(Lasm::OutputStream* stream, int arg) {
+    stream->write(" u");
+    stream->writeFast(arg);
+}
+
+void Luac::Instruction::printKIF(Lasm::OutputStream* stream, int arg) {
+    stream->write(" k");
+    stream->writeFast(arg);
+}
+
+void Luac::Instruction::printKI(Lasm::OutputStream* stream, int arg) {
+    stream->write(" k");
+    stream->write(arg);
+}
+
+void Luac::Instruction::printVIVKIVKI(Lasm::OutputStream* stream, int arg1, int arg2, int arg3) {
+    printVI(stream, arg1);
+    printVKI(stream, arg2);
+    printVKI(stream, arg3);
+}
+
+void Luac::Instruction::printVIVI(Lasm::OutputStream* stream, int arg1, int arg2) {
+    printVI(stream, arg1);
+    printVI(stream, arg2);
+}
+
+void Luac::Instruction::printGoto(Lasm::OutputStream* stream, size_t instCount, size_t pc, int arg) {
     stream->write(" ");
     if (instCount > 0) {
-        int gotopos = pc + sbx + 1;
+        int gotopos = pc + arg + 1;
         if (gotopos >= instCount || gotopos < 0) {
-            stream->write(sbx);
+            stream->write(arg);
         } else {
             stream->write(":goto_");
             stream->write(gotopos);
         }
     } else {
-        stream->write(sbx);
+        stream->write(arg);
     }
 }
 
-void Luac::Instruction::print(Lasm::OutputStream* stream, size_t instCount, size_t pc) {
+void Luac::Instruction::print(Lasm::OutputStream* s, size_t instCount, size_t pc) {
     int op = GET_OPCODE();
     int a = GETARG_A();
     int b = GETARG_B();
     int c = GETARG_C();
+    uint unused = 0;
     switch (op) {
         case MOVE: {
             // MOVE vA vB
             // stack[A] = stack[B];
-            stream->write("MOVE v");
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            if (c != 0) {
-                stream->writeHex9(c);
-            }
+            s->write("MOVE");
+            printVIVI(s, a, b);
+            unused = c;
             break;
         }
         case LOADK: {
             // LOADK vA kBx
             // stack[A] = constants[Bx];
-            int bx = GETARG_BX();
-            stream->write("LOADK v");
-            stream->writeFast(a);
-            stream->write(" k");
-            stream->write(bx);
+            s->write("LOADK");
+            printVI(s, a);
+            printKI(s, GETARG_BX());
             break;
         }
         case LOADKX: {
             // LOADKX vA
             // stack[A] = constants[EXTRAARG];
             // vm error if next instruction is not EXTRAARG
-            stream->write("LOADKX v");
-            stream->writeFast(a);
-            if (b) {
-                stream->write(" B = ");
-                stream->writeHex9(b);
-            }
-            if (c) {
-                stream->write(" C = ");
-                stream->writeHex9(c);
-            }
+            s->write("LOADKX");
+            printVI(s, a);
+            unused = GETARG_BX();
             break;
         }
         case LOADBOOL: {
@@ -136,12 +168,10 @@ void Luac::Instruction::print(Lasm::OutputStream* stream, size_t instCount, size
             // if (C) {
             //     pc = pc + 1;
             // }
-            stream->write("LOADBOOL v");
-            stream->writeFast(a);
-            stream->write(" ");
-            stream->writeFast(b);
-            stream->write(" ");
-            stream->writeFast(c);
+            s->write("LOADBOOL");
+            printVI(s, a);
+            printI(s, b);
+            printI(s, c);
             break;
         }
         case LOADNIL: {
@@ -149,393 +179,305 @@ void Luac::Instruction::print(Lasm::OutputStream* stream, size_t instCount, size
             // for (int i = 0; i <= B; i++) {
             //     stack[A + i] = NIL;
             // }
-            stream->write("LOADNIL v");
-            stream->writeFast(a);
-            stream->write("..v");
-            stream->writeFast(a + b);
-            if (c) {
-                stream->writeHex9(c);
-            }
+            s->write("LOADNIL");
+            printVITVI(s, a, a + b);
+            unused = c;
             break;
         }
         case GETUPVAL: {
             // GETUPVAL vA uB
             // stack[A] = upvalues[B];
-            stream->write("GETUPVAL v");
-            stream->writeFast(a);
-            stream->write(" u");
-            stream->writeFast(b);
-            if (c) {
-                stream->writeHex9(c);
-            }
+            s->write("GETUPVAL");
+            printVI(s, a);
+            printUI(s, b);
+            unused = c;
             break;
         }
         case GETTABUP: {
-            stream->write("GETTABUP v");
-            stream->writeFast(a);
-            stream->write(" u");
-            stream->writeFast(b);
-
-            if (c & 256) {
-                c = c & 255;
-                stream->write(" k");
-            } else {
-                stream->write(" v");
-            }
-            stream->writeFast(c);
+            s->write("GETTABUP");
+            printVI(s, a);
+            printUI(s, b);
+            printVKI(s, c);
             break;
         }
         case GETTABLE: {
-            stream->write("GETTABLE v");
-
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            if (c & 256) {
-                c = c & 255;
-                stream->write(" k");
-            } else {
-                stream->write(" v");
-            }
-            stream->writeFast(c);
+            s->write("GETTABLE");
+            printVIVI(s, a, b);
+            printVKI(s, c);
             break;
         }
         case SETTABUP: {
-            stream->write("SETTABUP u");
-            printVKVK(stream, a, b, c);
+            s->write("SETTABUP");
+            printUI(s, a);
+            printVKI(s, b);
+            printVKI(s, c);
+
             break;
         }
         case SETUPVAL: {
-            stream->write("SETUPVAL v");
-
-            stream->writeFast(a);
-            stream->write(" u");
-            stream->writeFast(b);
-            if (c) {
-                stream->writeHex9(c);
-            }
+            s->write("SETUPVAL");
+            printVI(s, a);
+            printUI(s, b);
+            unused = c;
             break;
         }
         case SETTABLE: {
-            stream->write("SETTABLE v");
-
-            printVKVK(stream, a, b, c);
+            s->write("SETTABLE");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case NEWTABLE: {
-            stream->write("NEWTABLE v");
-
-            stream->writeFast(a);
-            stream->write(" ");
-            stream->writeFast(b);
-            stream->write(" ");
-            stream->writeFast(c);
+            s->write("NEWTABLE");
+            printVI(s, a);
+            printI(s, b);
+            printI(s, c);
             break;
         }
         case SELF: {
-            stream->write("SELF v");
-
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            if (c & 256) {
-                c = c & 255;
-                stream->write(" k");
-            } else {
-                stream->write(" v");
-            }
-            stream->writeFast(c);
+            s->write("SELF");
+            printVIVI(s, a, b);
+            printVKI(s, c);
             break;
         }
         case ADD: {
-            stream->write("ADD v");
-            printVKVK(stream, a, b, c);
+            s->write("ADD");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case SUB: {
-            stream->write("SUB v");
-            printVKVK(stream, a, b, c);
+            s->write("SUB");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case MUL: {
-            stream->write("MUL v");
-            printVKVK(stream, a, b, c);
+            s->write("MUL");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case DIV: {
-            stream->write("DIV v");
-            printVKVK(stream, a, b, c);
+            s->write("DIV");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case MOD: {
-            stream->write("MOD v");
-            printVKVK(stream, a, b, c);
+            s->write("MOD");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case POW: {
-            stream->write("POW v");
-            printVKVK(stream, a, b, c);
+            s->write("POW");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case UNM: {
-            stream->write("UNM v");
-
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            if (c) {
-                stream->writeHex9(c);
-            }
+            s->write("UNM");
+            printVIVI(s, a, b);
+            unused = c;
             break;
         }
         case NOT: {
-            stream->write("NOT v");
-
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            if (c) {
-                stream->writeHex9(c);
-            }
+            s->write("NOT");
+            printVIVI(s, a, b);
+            unused = c;
             break;
         }
         case LEN: {
-            stream->write("LEN v");
-
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            if (c) {
-                stream->writeHex9(c);
-            }
+            s->write("LEN");
+            printVIVI(s, a, b);
+            unused = c;
             break;
         }
         case CONCAT: {
-            stream->write("CONCAT v");
+            s->write("CONCAT");
+            printVI(s, a);
 
-            stream->writeFast(a);
-            stream->write(" v");
-            if (c > b + 1) {
-                stream->writeFast(b);
-                stream->write("..v");
-                stream->writeFast(c);
+            if (b + 1 <= c) {
+                printVITVI(s, b, c);
             } else {
-                stream->writeFast(c - 1);
-                stream->write("..v");
-                stream->writeFast(c);
-                if (b != c - 1) {
-                    stream->writeHex9(b);
-                }
+                printVITVI(s, c - 1, c);
+                unused = b + 1 - c;
             }
             break;
         }
         case JMP: {
-            stream->write("JMP ");
-            int sbx = GETARG_SBX();
-            printGoto(stream, instCount, pc, a, sbx);
+            s->write("JMP");
+            printI(s, a);
+            printGoto(s, instCount, pc, GETARG_SBX());
             break;
         }
         case EQ: {
-            stream->write("EQ ");
-            printVKVK(stream, a, b, c);
+            s->write("EQ");
+            printI(s, a);
+            printVKI(s, b);
+            printVKI(s, c);
             break;
         }
         case LT: {
-            stream->write("LT ");
-            printVKVK(stream, a, b, c);
+            s->write("LT");
+            printI(s, a);
+            printVKI(s, b);
+            printVKI(s, c);
             break;
         }
         case LE: {
-            stream->write("LE ");
-            printVKVK(stream, a, b, c);
+            s->write("LE");
+            printI(s, a);
+            printVKI(s, b);
+            printVKI(s, c);
             break;
         }
         case TEST: {
-            stream->write("TEST v");
-            stream->writeFast(a);
-            stream->write(" ");
-            stream->writeFast(c);
-            if (b) {
-                stream->writeHex9(b);
-            }
+            s->write("TEST");
+            printVI(s, a);
+            printI(s, c);
+            unused = b;
             break;
         }
         case TESTSET: {
-            stream->write("TESTSET v");
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            stream->write(" ");
-            stream->writeFast(c);
-
+            s->write("TESTSET");
+            printVIVI(s, a, b);
+            printI(s, c);
             break;
         }
         case CALL: {
-            stream->write("CALL v");
-            stream->writeFast(a);
+            s->write("CALL");
+            printVI(s, a);
             if (b) {
-                stream->write("..v");
-                stream->writeFast(a + b - 1);
+                printTVI(s, a + b - 1);
             }
             if (c) {
                 if (c - 1) {
-                    stream->write(" v");
-                    stream->writeFast(a);
-                    stream->write("..v");
-                    stream->writeFast(a + c - 2);
+                    printVI(s, a);
+                    printTVI(s, a + c - 2);
                 }
             } else {
-                stream->write(" SET_TOP");
+                s->write(" SET_TOP");
             }
-
             break;
         }
         case TAILCALL: {
-            stream->write("TAILCALL v");
-            stream->writeFast(a);
+            s->write("TAILCALL");
+            printVI(s, a);
             if (b) {
-                stream->write("..v");
-                stream->writeFast(a + b - 1);
+                printTVI(s, a + b - 1);
             }
-            if (c) {
-                stream->writeHex9(c);
-            }
+            unused = c;
             break;
         }
         case RETURN: {
-            stream->write("RETURN");
-            if (b) {
-                if (b != 1) {
-                    stream->write(" v");
-                    stream->writeFast(a);
-                    stream->write("..v");
-                    stream->writeFast(a + b - 2);
-                } else { // b=1
-                    if (a) {
-                        stream->write(" A = ");
-                        stream->writeHex((u8)a);
-                    }
+            s->write("RETURN");
+            if (!b || b > 1) {
+                printVI(s, a);
+                if (b > 1) {
+                    printTVI(s, a + b - 2);
                 }
-            } else { // b=0
-                stream->write(" v");
-                stream->writeFast(a);
+            } else if (a) {
+                unused = a;
             }
             if (c) {
-                stream->write(" C = ");
-                stream->writeHex9(c);
+                unused |= (c << 8);
             }
             break;
         }
         case FORLOOP: {
-            stream->write("FORLOOP v");
-            int sbx = GETARG_SBX();
-            printGoto(stream, instCount, pc, a, sbx);
+            s->write("FORLOOP");
+            printVI(s, a);
+            printGoto(s, instCount, pc, GETARG_SBX());
             break;
         }
         case FORPREP: {
-            stream->write("FORPREP v");
-            int sbx = GETARG_SBX();
-            printGoto(stream, instCount, pc, a, sbx);
+            s->write("FORPREP");
+            printVI(s, a);
+            printGoto(s, instCount, pc, GETARG_SBX());
             break;
         }
         case TFORCALL: {
-            stream->write("TFORCALL v");
-            stream->writeFast(a);
-            stream->write("..v");
-            stream->writeFast(a + c + 2);
-            if (b) {
-                stream->writeHex9(b);
-            }
+            s->write("TFORCALL");
+            printVI(s, a);
+            printTVI(s, a + c + 2);
+            unused = b;
             break;
         }
         case TFORLOOP: {
-            stream->write("TFORLOOP v");
-            int sbx = GETARG_SBX();
-            printGoto(stream, instCount, pc, a, sbx);
+            s->write("TFORLOOP");
+            printVI(s, a);
+            printGoto(s, instCount, pc, GETARG_SBX());
             break;
         }
         case SETLIST: {
-            stream->write("SETLIST v");
-            stream->writeFast(a);
+            s->write("SETLIST");
+            printVI(s, a);
             if (b) {
-                stream->write("..v");
-                stream->writeFast(a + b);
+                printTVI(s, a + b);
             }
-            stream->write(" ");
-            stream->writeFast(c);
+            printI(s, c);
             break;
         }
         case CLOSURE: {
-            stream->write("CLOSURE v");
-            int bx = GETARG_BX();
-            stream->writeFast(a);
-            stream->write(" F");
-            stream->write(bx);
+            s->write("CLOSURE");
+            printVI(s, a);
+            s->write(" F");
+            s->write(GETARG_BX());
             break;
         }
         case VARARG: {
-            stream->write("VARARG ");
+            s->write("VARARG");
             if (b) {
-                stream->write("v");
-                stream->writeFast(a);
-                stream->write("..v");
-                stream->writeFast(a + b - 2);
+                printVI(s, a);
+                printTVI(s, a + b - 2);
             } else {
-                stream->writeFast(a);
+                printI(s, a);
             }
-            if (c) {
-                stream->writeHex9(c);
-            }
+            unused = c;
             break;
         }
         case EXTRAARG: {
-            stream->write("EXTRAARG ");
-            stream->write(GETARG_AX());
+            s->write("EXTRAARG ");
+            s->write(GETARG_AX());
             break;
         }
         case IDIV: {
-            stream->write("IDIV v");
-            printVKVK(stream, a, b, c);
+            s->write("IDIV");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case BNOT: {
-            stream->write("BNOT v");
-            stream->writeFast(a);
-            stream->write(" v");
-            stream->writeFast(b);
-            if (c) {
-                stream->writeHex9(c);
-            }
+            s->write("BNOT");
+            printVIVI(s, a, b);
+            unused = c;
             break;
         }
         case BAND: {
-            stream->write("BAND v");
-            printVKVK(stream, a, b, c);
+            s->write("BAND");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case BOR: {
-            stream->write("BOR v");
-            printVKVK(stream, a, b, c);
+            s->write("BOR");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case BXOR: {
-            stream->write("BXOR v");
-            printVKVK(stream, a, b, c);
+            s->write("BXOR");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case SHL: {
-            stream->write("SHL v");
-            printVKVK(stream, a, b, c);
+            s->write("SHL");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         case SHR: {
-            stream->write("SHR v");
-            printVKVK(stream, a, b, c);
+            s->write("SHR");
+            printVIVKIVKI(s, a, b, c);
             break;
         }
         default: {
-            stream->write(m_value);
+            s->write(m_value);
             break;
         }
+    }
+    if (unused) {
+        s->writeHex(unused);
     }
 }
