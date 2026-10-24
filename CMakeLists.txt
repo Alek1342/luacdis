@@ -57,6 +57,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
     target_compile_options("luacdis" PRIVATE "-Wall" "-Wextra" "-Werror")
 elseif(MSVC)
     target_compile_options("luacdis" PRIVATE "/W4" "/WX")
+	target_compile_definitions("luacdis" PRIVATE "_CRT_SECURE_NO_WARNINGS")
 endif()
 
 
@@ -70,4 +71,3 @@ target_link_libraries("luacdis" PRIVATE "dragonbox::dragonbox_to_chars")
 
 
 target_compile_features("luacdis" PRIVATE "c_std_11" "cxx_std_17")
-target_compile_definitions("luacdis" PRIVATE "_CRT_SECURE_NO_WARNINGS")
