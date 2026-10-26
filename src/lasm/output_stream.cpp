@@ -3,6 +3,7 @@
 #include "dragonbox/dragonbox_to_chars.h"
 #include "int2strt.hpp"
 #include "log.hpp"
+#include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 

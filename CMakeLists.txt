@@ -4,36 +4,54 @@ cmake_policy("SET" "CMP0091" "NEW")
 
 project("luacdis" LANGUAGES "CXX")
 
+message("CMAKE_CXX_COMPILER_ID = {${CMAKE_CXX_COMPILER_ID}}")
+message("MSVC = {${MSVC}}")
+message("MSVC_VERSION = {${MSVC_VERSION}}")
+
 option("ENABLE_ASAN" "Enable AddressSanitizer" ON)
-
-include("CheckCXXCompilerFlag")
-
 set(HAS_ASAN false)
+
 
 
 if(ENABLE_ASAN)
     add_library("asan_options" INTERFACE)
+
     if(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
+
+        include("CheckCXXCompilerFlag")
         check_cxx_compiler_flag("-fsanitize=address" "HAS_ASAN")
+
         if(HAS_ASAN) 
+
             target_compile_options("asan_options" INTERFACE "-fsanitize=address")
             target_link_options("asan_options" INTERFACE "-fsanitize=address")
+
         endif()
+
     elseif(MSVC)
+
+        include("CheckCXXCompilerFlag")
         check_cxx_compiler_flag("/fsanitize=address" "HAS_ASAN")
+
         if(HAS_ASAN)
-            set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+
             target_compile_options("asan_options" INTERFACE "/fsanitize=address")
             target_link_options("asan_options" INTERFACE "/fsanitize=address")
+
         endif()
+
     else()
-        message(WARNING "ASan configuration not supported for this compiler")
+
+        message(WARNING "ASan is not supported")
+
+    endif()
+
+    if(MSVC_VERSION AND HAS_ASAN)
+
+        set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+
     endif()
 endif()
-
-
-
-
 
 
 
@@ -53,11 +71,21 @@ target_include_directories("luacdis" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$")
+
+if((CMAKE_CXX_COMPILER_ID MATCHES "^Clang$") AND MSVC_VERSION)
+
     target_compile_options("luacdis" PRIVATE "-Wall" "-Wextra" "-Werror")
+    target_compile_definitions("luacdis" PRIVATE "_CRT_SECURE_NO_WARNINGS")
+
+elseif(CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang|AppleClang)$" )
+
+    target_compile_options("luacdis" PRIVATE "-Wall" "-Wextra" "-Werror")
+
 elseif(MSVC)
+
     target_compile_options("luacdis" PRIVATE "/W4" "/WX")
 	target_compile_definitions("luacdis" PRIVATE "_CRT_SECURE_NO_WARNINGS")
+
 endif()
 
 

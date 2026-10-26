@@ -75,9 +75,9 @@ void Luac::Instruction::printArray(Lasm::OutputStream* stream, Instruction* inst
     if (labels_len > 0) {
         label = labels[0];
     }
+    stream->reserve(count * (80 + 2 * stream->m_indent));
     for (size_t i = 0; i < count; ++i) {
         if (labels_len && i == label) {
-            stream->reserve(30 + stream->m_indent);
             stream->write('\t', stream->m_indent);
             stream->write(":goto_");
             stream->write((u32)label);
@@ -86,7 +86,6 @@ void Luac::Instruction::printArray(Lasm::OutputStream* stream, Instruction* inst
                 label = labels.at(label_i++);
             }
         }
-        stream->reserve(50 + stream->m_indent);
         stream->write('\t', stream->m_indent);
         instructions[i].print(stream, count, i);
         stream->write("\n");
