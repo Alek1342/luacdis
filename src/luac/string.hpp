@@ -2,6 +2,7 @@
 #include "lasm/output_stream.hpp"
 #include "luac/input_stream.hpp"
 #include "types.hpp"
+#include <cstddef>
 
 namespace Luac {
     class String {

@@ -1,6 +1,7 @@
 #pragma once
 #include "lasm/output_stream.hpp"
 #include "types.hpp"
+#include <cstddef>
 
 namespace Luac {
     class InputStream;

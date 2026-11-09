@@ -57,8 +57,8 @@ void Luac::Number::print(Lasm::OutputStream* stream) {
         if (isnan(m_fnum)) {
             u64 bits;
             memcpy(&bits, &m_fnum, 8);
-            uint64_t sign = bits >> 63;
-            uint64_t frac = bits & ((UINT64_C(1) << 52) - 1);
+            u64 sign = bits >> 63;
+            u64 frac = bits & ((UINT64_C(1) << 52) - 1);
             u64 id = sign * ((UINT64_C(1) << 52) - 1) + (frac - 1);
             if (id > 0) {
                 stream->write("(");

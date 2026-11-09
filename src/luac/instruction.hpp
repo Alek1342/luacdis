@@ -4,6 +4,7 @@
 #include "luac/array.hpp"
 #include "luac/input_stream.hpp"
 #include "types.hpp"
+#include <cstddef>
 
 namespace Luac {
     class Instruction {

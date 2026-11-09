@@ -10,6 +10,7 @@
 #include "luac/upvalue.hpp"
 #include "luac/upvaluename.hpp"
 #include "types.hpp"
+#include <cstddef>
 
 namespace Luac {
     class Prototype {

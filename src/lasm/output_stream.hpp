@@ -2,7 +2,9 @@
 
 #include "lasm/print_state.hpp"
 #include "types.hpp"
+#include <cstddef>
 #include <cstring>
+
 
 namespace Lasm {
     class OutputStream {
