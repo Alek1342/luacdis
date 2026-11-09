@@ -54,7 +54,7 @@ void Luac::Number::print(Lasm::OutputStream* stream) {
         stream->write(m_inum);
     } else {
         stream->write(m_fnum);
-        if (isnan(m_fnum)) {
+        if (std::isnan(m_fnum)) {
             u64 bits;
             memcpy(&bits, &m_fnum, 8);
             u64 sign = bits >> 63;
