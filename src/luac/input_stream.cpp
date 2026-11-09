@@ -7,24 +7,33 @@
 #include <cstring>
 #include <stdio.h>
 
+#ifdef _WIN32
+#define FSEEK64 _fseeki64
+#define FTELL64 _ftelli64
+#else
+#include <sys/types.h>
+#define FSEEK64 fseeko
+#define FTELL64 ftello
+#endif
+
 void Luac::InputStream::loadFromFile(char* path) {
     FILE* file = fopen(path, "rb");
     if (file == nullptr) {
         LOGF("fopen failed");
     }
 
-    if (_fseeki64(file, 0, SEEK_END) != 0) {
+    if (FSEEK64(file, 0, SEEK_END) != 0) {
         LOGF("seek fail");
     }
 
-    size_t size = _ftelli64(file);
+    size_t size = FTELL64(file);
 
     if (size == 0) {
         fclose(file);
         LOGF("Empty file");
     }
 
-    if (_fseeki64(file, 0, SEEK_SET) != 0) {
+    if (FSEEK64(file, 0, SEEK_SET) != 0) {
         LOGF("seek fail");
     }
 
